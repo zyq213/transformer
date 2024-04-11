@@ -38,6 +38,8 @@ class Transformer(nn.Module):
                                device=device)
 
     def forward(self, src, trg):
+        # src: 128, 27 src_mask 128, 1, 1, 27
+        # trg: 128, 29 trg_mask 128, 1, 29, 29
         src_mask = self.make_src_mask(src)
         trg_mask = self.make_trg_mask(trg)
         enc_src = self.encoder(src, src_mask)
@@ -49,8 +51,10 @@ class Transformer(nn.Module):
         return src_mask
 
     def make_trg_mask(self, trg):
+        # torch.Size([128, 1, 27, 1])
         trg_pad_mask = (trg != self.trg_pad_idx).unsqueeze(1).unsqueeze(3)
         trg_len = trg.shape[1]
-        trg_sub_mask = torch.tril(torch.ones(trg_len, trg_len)).type(torch.ByteTensor).to(self.device)
+        # 27,27
+        trg_sub_mask = torch.tril(torch.ones(trg_len, trg_len)).type(torch.BoolTensor).to(self.device)
         trg_mask = trg_pad_mask & trg_sub_mask
         return trg_mask

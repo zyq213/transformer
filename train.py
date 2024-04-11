@@ -60,7 +60,10 @@ def train(model, iterator, optimizer, criterion, clip):
         trg = batch.trg
 
         optimizer.zero_grad()
+        # src:128 28 trg:128 29 output: 128 28 7855
+        # src:128 29 trg:128 32 output: 128 31 7855
         output = model(src, trg[:, :-1])
+        # 3584, 7855
         output_reshape = output.contiguous().view(-1, output.shape[-1])
         trg = trg[:, 1:].contiguous().view(-1)
 

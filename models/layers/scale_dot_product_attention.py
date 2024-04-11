@@ -24,13 +24,17 @@ class ScaleDotProductAttention(nn.Module):
     def forward(self, q, k, v, mask=None, e=1e-12):
         # input is 4 dimension tensor
         # [batch_size, head, length, d_tensor]
+        # [64, 8, *, 64]
         batch_size, head, length, d_tensor = k.size()
 
         # 1. dot product Query with Key^T to compute similarity
+        # [64, 8, 64, *]
         k_t = k.transpose(2, 3)  # transpose
+        # [64, 8, *, *]
         score = (q @ k_t) / math.sqrt(d_tensor)  # scaled dot product
 
         # 2. apply masking (opt)
+        # 128, 1, 1, 42
         if mask is not None:
             score = score.masked_fill(mask == 0, -10000)
 
